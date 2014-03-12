@@ -1,0 +1,186 @@
+<?xml version = "1.0" encoding = "UTF-8" ?>
+<!--
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  Oracle JDeveloper BPEL Designer 
+  
+  Created: Tue Feb 25 21:14:39 BRT 2014
+  Author:  fsoa42
+  Purpose: Synchronous BPEL Process
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-->
+<process name="VerificaCredito"
+               targetNamespace="http://service.soaexpert.com.br/credito/verificaCredito"
+               xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+               xmlns:client="http://service.soaexpert.com.br/credito/verificaCred"
+               xmlns:ora="http://schemas.oracle.com/xpath/extension"
+               xmlns:bpelx="http://schemas.oracle.com/bpel/extension"
+               xmlns:bpel="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+         xmlns:ns1="http://soaexpert.com.br/CreditoService/"
+         xmlns:ns2="http://soaexpert.com.br/domain"
+         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+         queryLanguage="http://www.w3.org/TR/1999/REC-xpath-19991116"
+         expressionLanguage="http://www.w3.org/TR/1999/REC-xpath-19991116"
+         suppressJoinFailure="no" exitOnStandardFault="no"
+         xmlns:xp20="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.Xpath20"
+         xmlns:bpws="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+         xmlns:oraext="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.ExtFunc"
+         xmlns:dvm="http://www.oracle.com/XSL/Transform/java/oracle.tip.dvm.LookupValue"
+         xmlns:hwf="http://xmlns.oracle.com/bpel/workflow/xpath"
+         xmlns:ids="http://xmlns.oracle.com/bpel/services/IdentityService/xpath"
+         xmlns:bpm="http://xmlns.oracle.com/bpmn20/extensions"
+         xmlns:xdk="http://schemas.oracle.com/bpel/extension/xpath/function/xdk"
+         xmlns:xref="http://www.oracle.com/XSL/Transform/java/oracle.tip.xref.xpath.XRefXPathFunctions"
+         xmlns:ldap="http://schemas.oracle.com/xpath/extension/ldap">
+
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      PARTNERLINKS                                                      
+      List of services participating in this BPEL process               
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  --> 
+  <partnerLinks>
+    <!-- 
+      The 'client' role represents the requester of this service. It is 
+      used for callback. The location and correlation information associated
+      with the client role are automatically set using WS-Addressing.
+    -->
+    <partnerLink name="CreditoServiceESB"
+                 partnerLinkType="ns1:CreditoService_PL"
+                 partnerRole="CreditoService_Role"/>
+    <partnerLink name="verificaCred" partnerLinkType="client:verificaCred"
+                 myRole="execute_ptt"/>
+  </partnerLinks>
+  <variables>
+    <variable name="inputVariable" messageType="client:requestMessage"/>
+    <variable name="outputVariable" messageType="client:replyMessage"/>
+    <variable name="resultSPC" type="xsd:boolean"/>
+    <variable name="resultSerasa" type="xsd:boolean"/>
+    <variable name="resultCB" type="xsd:boolean"/>
+  </variables>
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      VARIABLES                                                        
+      List of messages and XML documents used within this BPEL process 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+     ORCHESTRATION LOGIC                                               
+     Set of activities coordinating the flow of messages across the    
+     services integrated within this business process                  
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <sequence name="main">
+
+    <!-- Receive input from requestor. (Note: This maps to operation defined in VerificaCredito.wsdl) -->
+    <receive name="receiveInput" partnerLink="verificaCred"
+             portType="client:execute_ptt" operation="execute" variable="inputVariable" createInstance="yes"/>
+    <scope name="ScopeSPC" exitOnStandardFault="no">
+      <variables>
+        <variable name="verificaCreditoSPC_InputVariable"
+                  messageType="ns1:verificaCreditoSPCRequest"/>
+        <variable name="verificaCreditoSPC_OutputVariable"
+                  messageType="ns1:verificaCreditoSPCResponse"/>
+      </variables>
+      <sequence name="Sequence1">
+        <assign name="trfSPCRequest">
+          <copy>
+            <from>$inputVariable.empresa</from>
+            <to>$verificaCreditoSPC_InputVariable.parameters/empresa</to>
+          </copy>
+        </assign>
+        <invoke name="InvokeSPC"
+                partnerLink="CreditoServiceESB" portType="ns1:CreditoService"
+                operation="verificaCreditoSPC"
+                inputVariable="verificaCreditoSPC_InputVariable"
+                outputVariable="verificaCreditoSPC_OutputVariable"
+                bpelx:invokeAsDetail="no"/>
+        <assign name="trfSPCResponse">
+          <copy>
+            <from>$verificaCreditoSPC_OutputVariable.parameters/credito/ns2:spc</from>
+            <to>$resultSPC</to>
+          </copy>
+        </assign>
+      </sequence>
+    </scope>
+    <scope name="ScopeSerasa" exitOnStandardFault="no">
+      <variables>
+        <variable name="verificaCreditoSerasa_InputVariable"
+                  messageType="ns1:verificaCreditoSerasaRequest"/>
+        <variable name="verificaCreditoSerasa_OutputVariable"
+                  messageType="ns1:verificaCreditoSerasaResponse"/>
+      </variables>
+      <sequence name="Sequence2">
+        <assign name="trfSerasaRequest">
+          <copy>
+            <from>$inputVariable.empresa</from>
+            <to>$verificaCreditoSerasa_InputVariable.parameters/empresa</to>
+          </copy>
+        </assign>
+        <invoke name="InvokeSerasa"
+                partnerLink="CreditoServiceESB" portType="ns1:CreditoService"
+                operation="verificaCreditoSerasa"
+                inputVariable="verificaCreditoSerasa_InputVariable"
+                outputVariable="verificaCreditoSerasa_OutputVariable"
+                bpelx:invokeAsDetail="no"/>
+        <assign name="trfSerasaResponse">
+          <copy>
+            <from>$verificaCreditoSerasa_OutputVariable.parameters/credito/ns2:serasa</from>
+            <to>$resultSerasa</to>
+          </copy>
+        </assign>
+      </sequence>
+    </scope>
+    <scope name="ScopeCasasBahia" exitOnStandardFault="no">
+      <variables>
+        <variable name="verificaCreditoCasasBahia_InputVariable"
+                  messageType="ns1:verificaCreditoCasasBahiaRequest"/>
+        <variable name="verificaCreditoCasasBahia_OutputVariable"
+                  messageType="ns1:verificaCreditoCasasBahiaResponse"/>
+      </variables>
+      <sequence name="Sequence3">
+        <assign name="trfCBRequest">
+          <copy>
+            <from>$inputVariable.empresa</from>
+            <to>$verificaCreditoCasasBahia_InputVariable.parameters/empresa</to>
+          </copy>
+        </assign>
+        <invoke name="InvokeCasasBahia"
+                partnerLink="CreditoServiceESB" portType="ns1:CreditoService"
+                operation="verificaCreditoCasasBahia"
+                inputVariable="verificaCreditoCasasBahia_InputVariable"
+                outputVariable="verificaCreditoCasasBahia_OutputVariable"
+                bpelx:invokeAsDetail="no"/>
+        <assign name="trfCBResponse">
+          <copy>
+            <from>$verificaCreditoCasasBahia_OutputVariable.parameters/credito/ns2:casasBahia</from>
+            <to>$resultCB</to>
+          </copy>
+        </assign>
+      </sequence>
+    </scope>
+    <if name="If1">
+      <documentation>aprovado</documentation>
+      <condition>boolean($resultSPC) = 'true' and boolean($resultSerasa) = 'true' and boolean($resultCB) = 'true'</condition>
+      <assign name="trfAprovado">
+        <copy>
+          <from>boolean('true')</from>
+          <to>$outputVariable.result</to>
+        </copy>
+      </assign>
+      <else>
+        <documentation>reprovado</documentation>
+        <assign name="trfReprovado">
+          <copy>
+            <from>boolean('false')</from>
+            <to>$outputVariable.result</to>
+          </copy>
+        </assign>
+      </else>
+    </if>
+    <!-- Generate reply to synchronous request -->
+    <reply name="replyOutput" partnerLink="verificaCred"
+           portType="client:execute_ptt" operation="execute" variable="outputVariable"/>
+  </sequence>
+</process>

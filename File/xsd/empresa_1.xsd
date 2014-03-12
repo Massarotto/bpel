@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:nxsd="http://xmlns.oracle.com/pcbpel/nxsd"
+            xmlns:tns="http://legacy.soaexpert.com.br/EmpresaFile"
+            targetNamespace="http://legacy.soaexpert.com.br/EmpresaFile"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified"
+
+            nxsd:version="NXSD"
+            nxsd:stream="chars"
+            nxsd:encoding="US-ASCII"
+>
+
+
+  <xsd:element name="empresa">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="codigo" type="xsd:int" nxsd:style="terminated" nxsd:terminatedBy=";" nxsd:quotedBy="&quot;" />
+        <xsd:element name="telefone" type="xsd:string" nxsd:style="terminated" nxsd:terminatedBy=";" nxsd:quotedBy="&quot;" />
+        <xsd:element name="cnpj" type="xsd:string" nxsd:style="terminated" nxsd:terminatedBy=";" nxsd:quotedBy="&quot;" />
+        <xsd:element name="razaoSocial" type="xsd:string" nxsd:style="terminated" nxsd:terminatedBy=";" nxsd:quotedBy="&quot;" />
+        <xsd:element name="nomeFantasia" type="xsd:string" nxsd:style="terminated" nxsd:terminatedBy="${eol}" nxsd:quotedBy="&quot;" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+</xsd:schema>
+<!--NXSDWIZ:/home/fsoa42/empresa.txt:-->
+<!--USE-HEADER:false:-->

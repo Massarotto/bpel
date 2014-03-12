@@ -1,0 +1,74 @@
+<?xml version = "1.0" encoding = "UTF-8" ?>
+<!--
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  Oracle JDeveloper BPEL Designer 
+  
+  Created: Tue Feb 25 19:30:44 BRT 2014
+  Author:  fsoa42
+  Purpose: Synchronous BPEL Process
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-->
+<process name="Aprova"
+               targetNamespace="http://service.soaexpert.com.br/credito/aprovar"
+               xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+               xmlns:client="http://service.soaexpert.com.br/credito/aprovar"
+               xmlns:ora="http://schemas.oracle.com/xpath/extension"
+               xmlns:bpelx="http://schemas.oracle.com/bpel/extension"
+               xmlns:bpel="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+         xmlns:ns1="http://soaexpert.com.br/EmpresaService/"
+         xmlns:ns2="http://soaexpert.com.br/domain">
+
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      PARTNERLINKS                                                      
+      List of services participating in this BPEL process               
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  --> 
+  <partnerLinks>
+    <!-- 
+      The 'client' role represents the requester of this service. It is 
+      used for callback. The location and correlation information associated
+      with the client role are automatically set using WS-Addressing.
+    -->
+    <partnerLink name="credaprova_client" partnerLinkType="client:Aprova" myRole="AprovaProvider"/>
+    <partnerLink name="EmpresaESB" partnerLinkType="ns1:EmpresaService_PL"
+                 partnerRole="EmpresaService_Role"/>
+  </partnerLinks>
+
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      VARIABLES                                                        
+      List of messages and XML documents used within this BPEL process 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <variables>
+    <!-- Reference to the message passed as input during initiation -->
+    <variable name="inputVariable" messageType="client:requestMessage"/>
+    <variable name="aprovaEmpresa_InputVariable"
+              messageType="ns1:aprovaEmpresaRequest"/>
+  </variables>
+
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+     ORCHESTRATION LOGIC                                               
+     Set of activities coordinating the flow of messages across the    
+     services integrated within this business process                  
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <sequence name="main">
+
+    <!-- Receive input from requestor. (Note: This maps to operation defined in Aprova.wsdl) -->
+    <receive name="receiveInput" partnerLink="credaprova_client" portType="client:execute_ptt" operation="execute" variable="inputVariable" createInstance="yes"/>
+    <assign name="trfRequest">
+      <copy>
+        <from>$inputVariable.empresa</from>
+        <to>$aprovaEmpresa_InputVariable.parameters/empresa</to>
+      </copy>
+    </assign>
+    <invoke name="InvokeAprova"
+            partnerLink="EmpresaESB" portType="ns1:EmpresaService"
+            operation="aprovaEmpresa"
+            inputVariable="aprovaEmpresa_InputVariable"
+            bpelx:invokeAsDetail="no"/>
+  </sequence>
+</process>

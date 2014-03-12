@@ -1,0 +1,11 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<hwTaskFlows xmlns="http://xmlns.oracle.com/bpel/workflow/hwTaskFlowProperties">
+   <ApplicationName>worklist</ApplicationName>
+   <LookupType>LOCAL</LookupType>
+   <TaskFlowDeploy>false</TaskFlowDeploy>
+   <TaskFlowServer>
+      <hostName/>
+      <httpPort/>
+      <httpsPort/>
+   </TaskFlowServer>
+<hwTaskFlow><WorkflowName>AnaliseManual</WorkflowName><TaskDefinitionNamespace>http://service.soaexpert.com.br/HumanTask/AnaliseManual</TaskDefinitionNamespace><TaskFlowId>AnaliseManual_TaskFlow</TaskFlowId><TaskFlowFileName>WEB-INF/AnaliseManual_TaskFlow.xml</TaskFlowFileName></hwTaskFlow></hwTaskFlows>

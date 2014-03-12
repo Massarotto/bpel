@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<JavaBean xmlns="http://xmlns.oracle.com/adfm/beanmodel" version="11.1.1.61.92"
+          id="Empresa" Package="TelaAnaliseManual_AnaliseManual"
+          BeanClass="TelaAnaliseManual_AnaliseManual.Empresa"
+          isJavaBased="false">
+  <Attribute Name="id" Type="java.lang.BigInteger">
+    <Properties>
+      <CustomProperties>
+        <Property Name="nextSiblingNamespace"
+                  Value="http://soaexpert.com.br/domain"/>
+        <Property Name="nextSibling" Value="razaoSocial"/>
+        <Property Name="minOccurs" Value="1"/>
+        <Property Name="fractionDigits" Value="0"/>
+        <Property Name="maxOccurs" Value="1"/>
+        <Property Name="LABEL" Value="Id"/>
+        <Property Name="LeafElement_hint" Value="LeafElement_no_attribute"/>
+        <Property Name="nillable" Value="false"/>
+        <Property Name="originalName" Value="id"/>
+        <Property Name="targetNamespace"
+                  Value="http://soaexpert.com.br/domain"/>
+        <Property Name="type" Value="java.lang.BigInteger"/>
+      </CustomProperties>
+    </Properties>
+  </Attribute>
+  <Attribute Name="razaoSocial" Type="java.lang.String">
+    <Properties>
+      <CustomProperties>
+        <Property Name="nextSiblingNamespace"
+                  Value="http://soaexpert.com.br/domain"/>
+        <Property Name="nextSibling" Value="nomeFantasia"/>
+        <Property Name="minOccurs" Value="1"/>
+        <Property Name="maxOccurs" Value="1"/>
+        <Property Name="LABEL" Value="Razao Social"/>
+        <Property Name="LeafElement_hint" Value="LeafElement_no_attribute"/>
+        <Property Name="nillable" Value="false"/>
+        <Property Name="originalName" Value="razaoSocial"/>
+        <Property Name="targetNamespace"
+                  Value="http://soaexpert.com.br/domain"/>
+        <Property Name="type" Value="java.lang.String"/>
+      </CustomProperties>
+    </Properties>
+  </Attribute>
+  <Attribute Name="nomeFantasia" Type="java.lang.String">
+    <Properties>
+      <CustomProperties>
+        <Property Name="nextSiblingNamespace"
+                  Value="http://soaexpert.com.br/domain"/>
+        <Property Name="nextSibling" Value="cnpj"/>
+        <Property Name="minOccurs" Value="1"/>
+        <Property Name="maxOccurs" Value="1"/>
+        <Property Name="LABEL" Value="Nome Fantasia"/>
+        <Property Name="LeafElement_hint" Value="LeafElement_no_attribute"/>
+        <Property Name="nillable" Value="false"/>
+        <Property Name="originalName" Value="nomeFantasia"/>
+        <Property Name="targetNamespace"
+                  Value="http://soaexpert.com.br/domain"/>
+        <Property Name="type" Value="java.lang.String"/>
+      </CustomProperties>
+    </Properties>
+  </Attribute>
+  <Attribute Name="cnpj" Type="java.lang.String">
+    <Properties>
+      <CustomProperties>
+        <Property Name="nextSiblingNamespace"
+                  Value="http://soaexpert.com.br/domain"/>
+        <Property Name="nextSibling" Value="telefone"/>
+        <Property Name="minOccurs" Value="1"/>
+        <Property Name="maxOccurs" Value="1"/>
+        <Property Name="LABEL" Value="Cnpj"/>
+        <Property Name="LeafElement_hint" Value="LeafElement_no_attribute"/>
+        <Property Name="nillable" Value="false"/>
+        <Property Name="originalName" Value="cnpj"/>
+        <Property Name="targetNamespace"
+                  Value="http://soaexpert.com.br/domain"/>
+        <Property Name="type" Value="java.lang.String"/>
+      </CustomProperties>
+    </Properties>
+  </Attribute>
+  <Attribute Name="telefone" Type="java.lang.BigInteger">
+    <Properties>
+      <CustomProperties>
+        <Property Name="minOccurs" Value="1"/>
+        <Property Name="fractionDigits" Value="0"/>
+        <Property Name="maxOccurs" Value="1"/>
+        <Property Name="LABEL" Value="Telefone"/>
+        <Property Name="LeafElement_hint" Value="LeafElement_no_attribute"/>
+        <Property Name="nillable" Value="false"/>
+        <Property Name="originalName" Value="telefone"/>
+        <Property Name="targetNamespace"
+                  Value="http://soaexpert.com.br/domain"/>
+        <Property Name="type" Value="java.lang.BigInteger"/>
+      </CustomProperties>
+    </Properties>
+  </Attribute>
+</JavaBean>

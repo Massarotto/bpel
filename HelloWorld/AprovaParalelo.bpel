@@ -1,0 +1,132 @@
+<?xml version = "1.0" encoding = "UTF-8" ?>
+<!--
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  Oracle JDeveloper BPEL Designer 
+  
+  Created: Thu Feb 27 20:22:19 BRT 2014
+  Author:  fsoa42
+  Purpose: Synchronous BPEL Process
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-->
+<process name="AprovaParalelo"
+               targetNamespace="http://service.soaexpert.com.br/credito/aprovaParalelo"
+               xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+               xmlns:client="http://service.soaexpert.com.br/credito/aprovaParalelo"
+               xmlns:ora="http://schemas.oracle.com/xpath/extension"
+               xmlns:bpelx="http://schemas.oracle.com/bpel/extension"
+               xmlns:ns1="http://service.soaexpert.com.br/credito/verificaCred"
+               xmlns:bpel="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+         xmlns:ns2="http://soaexpert.com.br/CreditoService/"
+         xmlns:ns3="http://soaexpert.com.br/domain"
+         xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      PARTNERLINKS                                                      
+      List of services participating in this BPEL process               
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  --> 
+  <partnerLinks>
+    <!-- 
+      The 'client' role represents the requester of this service. It is 
+      used for callback. The location and correlation information associated
+      with the client role are automatically set using WS-Addressing.
+    -->
+    <partnerLink name="aprovaparalelo_client" partnerLinkType="ns1:AprovaParalelo" myRole="execute_ptt"/>
+    <partnerLink name="CreditoESB" partnerLinkType="ns2:CreditoService_PL"
+                 partnerRole="CreditoService_Role"/>
+  </partnerLinks>
+
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      VARIABLES                                                        
+      List of messages and XML documents used within this BPEL process 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <variables>
+    <!-- Reference to the message passed as input during initiation -->
+    <variable name="inputVariable" messageType="ns1:requestMessage"/>
+
+    <!-- Reference to the message that will be returned to the requester-->
+    <variable name="outputVariable" messageType="ns1:replyMessage"/>
+    <variable name="respSerasa" type="xsd:boolean"/>
+    <variable name="respSPC" type="xsd:boolean"/>
+  </variables>
+
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+     ORCHESTRATION LOGIC                                               
+     Set of activities coordinating the flow of messages across the    
+     services integrated within this business process                  
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <sequence name="main">
+
+    <!-- Receive input from requestor. (Note: This maps to operation defined in AprovaParalelo.wsdl) -->
+    <receive name="receiveInput" partnerLink="aprovaparalelo_client" portType="ns1:execute_ptt" operation="execute" variable="inputVariable" createInstance="yes"/>
+    <flow name="Flow1">
+      <sequence name="Sequence">
+        <scope name="Scope1">
+          <variables>
+            <variable name="verificaCreditoSerasa_InputVariable"
+                      messageType="ns2:verificaCreditoSerasaRequest"/>
+            <variable name="verificaCreditoSerasa_OutputVariable"
+                      messageType="ns2:verificaCreditoSerasaResponse"/>
+          </variables>
+          <sequence name="Sequence2">
+            <assign name="trfSerasaReq">
+              <copy>
+                <from>$inputVariable.empresa</from>
+                <to>$verificaCreditoSerasa_InputVariable.parameters/empresa</to>
+              </copy>
+            </assign>
+            <invoke name="InvokeSerasa"
+                    partnerLink="CreditoESB" portType="ns2:CreditoService"
+                    operation="verificaCreditoSerasa"
+                    inputVariable="verificaCreditoSerasa_InputVariable"
+                    outputVariable="verificaCreditoSerasa_OutputVariable"
+                    bpelx:invokeAsDetail="no"/>
+            <assign name="trfSerasaResp">
+              <copy>
+                <from>$verificaCreditoSerasa_OutputVariable.parameters/credito/ns3:serasa</from>
+                <to>$respSerasa</to>
+              </copy>
+            </assign>
+          </sequence>
+        </scope>
+      </sequence>
+      <sequence name="Sequence1">
+        <scope name="Scope2">
+          <variables>
+            <variable name="verificaCreditoSPC_InputVariable"
+                      messageType="ns2:verificaCreditoSPCRequest"/>
+            <variable name="verificaCreditoSPC_OutputVariable"
+                      messageType="ns2:verificaCreditoSPCResponse"/>
+          </variables>
+          <sequence name="Sequence3">
+            <assign name="trfSPCReq">
+              <copy>
+                <from>$inputVariable.empresa</from>
+                <to>$verificaCreditoSPC_InputVariable.parameters/empresa</to>
+              </copy>
+            </assign>
+            <invoke name="InvokeSPC"
+                    partnerLink="CreditoESB" portType="ns2:CreditoService"
+                    operation="verificaCreditoSPC"
+                    inputVariable="verificaCreditoSPC_InputVariable"
+                    outputVariable="verificaCreditoSPC_OutputVariable"
+                    bpelx:invokeAsDetail="no"/>
+            <assign name="trfSPCResp">
+              <copy>
+                <from>$verificaCreditoSPC_OutputVariable.parameters/credito/ns3:spc</from>
+                <to>$respSPC</to>
+              </copy>
+            </assign>
+          </sequence>
+        </scope>
+      </sequence>
+    </flow>
+    <!-- Generate reply to synchronous request -->
+    <reply name="replyOutput" partnerLink="aprovaparalelo_client" portType="ns1:execute_ptt" operation="execute" variable="outputVariable"/>
+  </sequence>
+</process>

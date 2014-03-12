@@ -1,0 +1,31 @@
+<?xml version= '1.0' encoding= 'UTF-8' ?>
+<wsdl:definitions
+     name="verificaCred"
+     targetNamespace="http://service.soaexpert.com.br/credito/verificaCred"
+     xmlns:inp2="http://service.soaexpert.com.br/credito/verificaCred"
+     xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+     xmlns:inp1="http://soaexpert.com.br/domain"
+     xmlns:tns="http://service.soaexpert.com.br/credito/verificaCred"
+    >
+    <wsdl:types>
+        <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+            <xsd:import namespace="http://soaexpert.com.br/domain" schemaLocation="xsd/DomainModel.xsd"/>
+        </xsd:schema>
+        <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://service.soaexpert.com.br/credito/verificaCred"
+             elementFormDefault="qualified">
+            <element name="boolean" type="boolean"/>
+        </schema>
+    </wsdl:types>
+    <wsdl:message name="requestMessage">
+        <wsdl:part name="empresa" element="inp1:empresa"/>
+    </wsdl:message>
+    <wsdl:message name="replyMessage">
+        <wsdl:part name="result" element="inp2:boolean"/>
+    </wsdl:message>
+    <wsdl:portType name="execute_ptt">
+        <wsdl:operation name="execute">
+            <wsdl:input message="inp2:requestMessage"/>
+            <wsdl:output message="inp2:replyMessage"/>
+        </wsdl:operation>
+    </wsdl:portType>
+</wsdl:definitions>

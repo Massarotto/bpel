@@ -1,0 +1,15 @@
+<?xml version= '1.0' encoding= 'UTF-8' ?>
+<wsdl:definitions
+     name="CreditoService"
+     targetNamespace="http://soaexpert.com.br/CreditoService/"
+     xmlns:ns1="http://soaexpert.com.br/CreditoService/"
+     xmlns:plnk="http://docs.oasis-open.org/wsbpel/2.0/plnktype"
+     xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+     xmlns:bpws="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    >
+    <plnk:partnerLinkType name="CreditoService_PL">
+        <plnk:role name="CreditoService_Role" portType="ns1:CreditoService"/>
+    </plnk:partnerLinkType>
+    <wsdl:import namespace="http://soaexpert.com.br/CreditoService/" location="CreditoService.wsdl"/>
+</wsdl:definitions>
